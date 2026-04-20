@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="MangaMap - Discover manga based on your interests, experience level, and preferences. Browse genres, eras, top mangakas, and top-rated manga rankings.">
+    <meta name="keywords" content="manga, manga recommendations, manga genres, top manga, mangaka, anime, manga rankings">
+    <meta name="author" content="Ashish Kurse">
+    <title>MangaMap - Discover Your Next Manga</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- ===== HEADER ===== -->
+    <header>
+        <div class="logo-area">
+            <div class="logo-text">
+                <h1>MangaMap</h1>
+                <p>Discover your next manga</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- ===== NAV ===== -->
+    <nav>
+        <ul>
+            <li><a href="index.html" class="active">Home</a></li>
+            <li><a href="genres.html">Genres</a></li>
+            <li><a href="eras.html">Manga By Era</a></li>
+            <li><a href="mangakas.html">Top Mangakas</a></li>
+            <li><a href="top-rated.html">Top Rated Manga</a></li>
+        </ul>
+    </nav>
+
+    <!-- ===== MAIN ===== -->
+    <main>
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <h2>Welcome to MangaMap</h2>
+            <p>Your guide to discovering manga based on your interests, experience level, and preferences. Whether you are a beginner looking for your first series or a seasoned reader exploring new titles, MangaMap helps you find your next great read.</p>
+            <div class="hero-features">
+                <div class="hero-feature">
+                    <h4>Browse Genres</h4>
+                    <p>Explore Shonen, Seinen, Isekai, Slice of Life, and more</p>
+                </div>
+                <div class="hero-feature">
+                    <h4>Discover by Era</h4>
+                    <p>Find manga from the 1990s, 2000s, and 2010s</p>
+                </div>
+                <div class="hero-feature">
+                    <h4>Top Mangakas</h4>
+                    <p>Learn about the artists behind your favorite series</p>
+                </div>
+                <div class="hero-feature">
+                    <h4>Top Rated</h4>
+                    <p>See the highest rated manga of all time</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Top Rated Manga Section -->
+        <section>
+            <h2 class="section-title">Top-Rated Manga</h2>
+            <p class="section-subtitle">The highest rated manga of all time based on reader scores from MyAnimeList.</p>
+            <div class="manga-grid" id="top-manga-grid">
+                <!-- Cards populated by Jikan API -->
+            </div>
+        </section>
+
+        <!-- Top Manga Artists Section -->
+        <section>
+            <h2 class="section-title">Top Manga Artists</h2>
+            <p class="section-subtitle">Legendary mangakas who have shaped the world of manga with their groundbreaking work and storytelling.</p>
+            <div class="mangaka-grid">
+                <div class="mangaka-card">
+                    <img src="https://cdn.myanimelist.net/images/voiceactors/3/72634.jpg" alt="Portrait of Eiichiro Oda, creator of One Piece">
+                    <h3>Eiichiro Oda</h3>
+                    <p>Creator of One Piece, the best-selling manga series in history with over 500 million copies sold worldwide. Oda began One Piece in 1997 and continues to write it to this day.</p>
+                </div>
+                <div class="mangaka-card">
+                    <img src="https://cdn.myanimelist.net/images/voiceactors/3/55486.jpg" alt="Portrait of Akira Toriyama, creator of Dragon Ball">
+                    <h3>Akira Toriyama</h3>
+                    <p>The legendary creator of Dragon Ball and Dr. Slump. Toriyama's art style and storytelling defined the shonen genre and inspired countless manga artists around the world.</p>
+                </div>
+                <div class="mangaka-card">
+                    <img src="https://cdn.myanimelist.net/images/voiceactors/2/65379.jpg" alt="Portrait of Masashi Kishimoto, creator of Naruto">
+                    <h3>Masashi Kishimoto</h3>
+                    <p>Best known as the creator of Naruto, one of the most iconic shonen manga series. Kishimoto's work has sold over 250 million copies and became a global phenomenon.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Manga By Era Section -->
+        <section>
+            <h2 class="section-title">Manga By Era</h2>
+            <p class="section-subtitle">Explore manga across different decades and discover how the art form has evolved over the years.</p>
+            <div class="era-grid">
+                <div class="era-card">
+                    <h3>1990s</h3>
+                    <p>The golden age of shonen manga. This era gave us Dragon Ball, Slam Dunk, Yu Yu Hakusho, and the beginning of One Piece. Manga exploded in popularity worldwide during this decade.</p>
+                </div>
+                <div class="era-card">
+                    <h3>2000s</h3>
+                    <p>The rise of Naruto, Bleach, and Death Note defined this decade. Manga became a mainstream global entertainment medium with diverse genres reaching new audiences everywhere.</p>
+                </div>
+                <div class="era-card">
+                    <h3>2010s</h3>
+                    <p>Modern classics like Attack on Titan, My Hero Academia, and Demon Slayer emerged in this era. Digital manga reading expanded access for fans around the world like never before.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Most Popular Manga Section -->
+        <section>
+            <h2 class="section-title">Most Popular Manga</h2>
+            <p class="section-subtitle">The most widely read and loved manga series based on popularity rankings from the manga community.</p>
+            <div class="manga-grid" id="popular-manga-grid">
+                <!-- Cards populated by Jikan API -->
+            </div>
+        </section>
+
+        <!-- Feedback Form Section -->
+        <section class="feedback-section">
+            <h2>Website Feedback Survey</h2>
+            <p style="color: #aaa; margin-bottom: 20px;">Help us improve MangaMap by sharing your feedback. We value your input and want to make this the best manga discovery tool possible.</p>
+            <form action="#" method="post">
+
+                <div class="form-group">
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" name="name" placeholder="Enter your name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                </div>
+
+                <div class="form-group">
+                    <label>How would you rate your overall experience on MangaMap?</label>
+                    <div class="radio-group">
+                        <label><input type="radio" name="rating" value="excellent"> Excellent</label>
+                        <label><input type="radio" name="rating" value="good"> Good</label>
+                        <label><input type="radio" name="rating" value="average"> Average</label>
+                        <label><input type="radio" name="rating" value="poor"> Poor</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="useful-page">Which page did you find most useful?</label>
+                    <select id="useful-page" name="useful-page">
+                        <option value="">-- Select a page --</option>
+                        <option value="home">Home</option>
+                        <option value="genres">Genres</option>
+                        <option value="eras">Manga By Era</option>
+                        <option value="mangakas">Top Mangakas</option>
+                        <option value="top-rated">Top Rated Manga</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="comments">Suggestions or Comments:</label>
+                    <textarea id="comments" name="comments" placeholder="Share your ideas, report issues, or request new features..."></textarea>
+                </div>
+
+                <button type="submit" class="submit-btn">Submit Feedback</button>
+            </form>
+        </section>
+
+    </main>
+
+    <!-- ===== FOOTER ===== -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3>Site Links</h3>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="genres.html">Genres</a></li>
+                    <li><a href="eras.html">Manga By Era</a></li>
+                    <li><a href="mangakas.html">Top Mangakas</a></li>
+                    <li><a href="top-rated.html">Top Rated Manga</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Contact Us</h3>
+                <p>Have questions or suggestions?</p>
+                <p><a href="mailto:akurse@asu.edu">akurse@asu.edu</a></p>
+                <p>Arizona State University</p>
+                <p>Tempe, AZ 85281</p>
+            </div>
+            <div class="footer-column">
+                <h3>Resources</h3>
+                <p>Manga data provided by:</p>
+                <p><a href="https://myanimelist.net" target="_blank">MyAnimeList</a></p>
+                <p><a href="https://jikan.moe" target="_blank">Jikan API</a></p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 MangaMap | Ashish Kurse | CIS 300 Project Assignment</p>
+        </div>
+    </footer>
+
+    <!-- Jikan API Script to load manga data -->
+    <script>
+        // Fetch top-rated manga from Jikan API
+        async function fetchTopManga() {
+            try {
+                const response = await fetch('https://api.jikan.moe/v4/top/manga?limit=4');
+                const data = await response.json();
+                const grid = document.getElementById('top-manga-grid');
+                data.data.forEach(manga => {
+                    const card = document.createElement('div');
+                    card.className = 'manga-card';
+                    card.innerHTML = `
+                        <img src="${manga.images.jpg.image_url}" alt="Cover art for ${manga.title}">
+                        <div class="manga-card-info">
+                            <h3>${manga.title}</h3>
+                            <p>by ${manga.authors.map(a => a.name).join(', ') || 'Unknown'}</p>
+                            <p class="rating">Score: ${manga.score || 'N/A'} / 10</p>
+                            <p>Published: ${manga.published.prop.from.year || 'N/A'}</p>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+            } catch (error) {
+                console.error('Error fetching top manga:', error);
+            }
+        }
+
+        // Fetch most popular manga from Jikan API
+        async function fetchPopularManga() {
+            try {
+                // Small delay to respect Jikan API rate limit
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                const response = await fetch('https://api.jikan.moe/v4/top/manga?filter=bypopularity&limit=4');
+                const data = await response.json();
+                const grid = document.getElementById('popular-manga-grid');
+                data.data.forEach(manga => {
+                    const card = document.createElement('div');
+                    card.className = 'manga-card';
+                    card.innerHTML = `
+                        <img src="${manga.images.jpg.image_url}" alt="Cover art for ${manga.title}">
+                        <div class="manga-card-info">
+                            <h3>${manga.title}</h3>
+                            <p>by ${manga.authors.map(a => a.name).join(', ') || 'Unknown'}</p>
+                            <p class="rating">Score: ${manga.score || 'N/A'} / 10</p>
+                            <p>Published: ${manga.published.prop.from.year || 'N/A'}</p>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+            } catch (error) {
+                console.error('Error fetching popular manga:', error);
+            }
+        }
+
+        // Load data when page loads
+        fetchTopManga();
+        fetchPopularManga();
+    </script>
+
+</body>
+</html>

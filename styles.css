@@ -1,0 +1,465 @@
+/* MangaMap - External Stylesheet */
+/* Color scheme from realtimecolors.com */
+:root {
+    --text: #eeecee;
+    --background: #0d080d;
+    --primary: #ffffff;
+    --secondary: #fdfdfd;
+    --accent: #ffffff;
+}
+
+/* Reset and base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--background);
+    color: var(--text);
+    line-height: 1.6;
+}
+
+/* ===== HEADER ===== */
+header {
+    background-color: #111111;
+    padding: 20px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 3px solid var(--accent);
+}
+
+.logo-area {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.logo-area img {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+}
+
+.logo-text h1 {
+    font-size: 2rem;
+    color: var(--primary);
+    letter-spacing: 1px;
+}
+
+.logo-text p {
+    font-size: 0.85rem;
+    color: #aaa;
+}
+
+/* ===== NAV ===== */
+nav {
+    background-color: #0a0a0a;
+    padding: 0;
+    text-align: center;
+    border-bottom: 1px solid #222222;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    gap: 0;
+}
+
+nav ul li {
+    flex: 1;
+    max-width: 220px;
+}
+
+nav ul li a {
+    display: block;
+    color: var(--text);
+    text-decoration: none;
+    padding: 18px 25px;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: background-color 0.3s, color 0.3s;
+    border-left: 1px solid #222222;
+}
+
+nav ul li:first-child a {
+    border-left: none;
+}
+
+nav ul li a:hover,
+nav ul li a.active {
+    background-color: var(--accent);
+    color: #000000;
+}
+
+/* ===== MAIN ===== */
+main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+/* Hero Section */
+.hero {
+    text-align: center;
+    padding: 60px 30px;
+    background: linear-gradient(135deg, #111111 0%, #1a1a1a 50%, #111111 100%);
+    border-radius: 12px;
+    margin-bottom: 50px;
+    border: 1px solid #222222;
+}
+
+.hero h2 {
+    font-size: 2.4rem;
+    color: var(--primary);
+    margin-bottom: 15px;
+}
+
+.hero p {
+    font-size: 1.1rem;
+    color: #ccc;
+    max-width: 700px;
+    margin: 0 auto 25px;
+}
+
+.hero-features {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 30px;
+    flex-wrap: wrap;
+}
+
+.hero-feature {
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--accent);
+    border-radius: 8px;
+    padding: 20px;
+    width: 200px;
+    text-align: center;
+}
+
+.hero-feature h4 {
+    color: var(--accent);
+    margin-bottom: 8px;
+    font-size: 1rem;
+}
+
+.hero-feature p {
+    font-size: 0.85rem;
+    color: #bbb;
+}
+
+/* Section styling */
+.section-title {
+    font-size: 1.8rem;
+    color: var(--primary);
+    margin-bottom: 8px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--accent);
+}
+
+.section-subtitle {
+    color: #aaa;
+    margin-bottom: 25px;
+    font-size: 0.95rem;
+}
+
+section {
+    margin-bottom: 50px;
+}
+
+/* Manga card grid */
+.manga-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 25px;
+}
+
+.manga-card {
+    background-color: #111111;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #222222;
+    transition: transform 0.3s, border-color 0.3s;
+}
+
+.manga-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--accent);
+}
+
+.manga-card img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    display: block;
+}
+
+.manga-card-info {
+    padding: 15px;
+}
+
+.manga-card-info h3 {
+    font-size: 1rem;
+    color: var(--primary);
+    margin-bottom: 5px;
+}
+
+.manga-card-info p {
+    font-size: 0.85rem;
+    color: #aaa;
+    margin-bottom: 3px;
+}
+
+.manga-card-info .rating {
+    color: var(--accent);
+    font-weight: bold;
+}
+
+/* Mangaka profiles */
+.mangaka-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 25px;
+}
+
+.mangaka-card {
+    background-color: #111111;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid #222222;
+    transition: border-color 0.3s;
+}
+
+.mangaka-card:hover {
+    border-color: var(--accent);
+}
+
+.mangaka-card img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 12px;
+    border: 2px solid var(--accent);
+}
+
+.mangaka-card h3 {
+    color: var(--primary);
+    margin-bottom: 5px;
+}
+
+.mangaka-card p {
+    color: #aaa;
+    font-size: 0.85rem;
+}
+
+/* Era section */
+.era-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 25px;
+}
+
+.era-card {
+    background: linear-gradient(135deg, #111111, #1a1a1a);
+    border-radius: 10px;
+    padding: 25px;
+    border: 1px solid #222222;
+    transition: border-color 0.3s;
+}
+
+.era-card:hover {
+    border-color: var(--accent);
+}
+
+.era-card h3 {
+    color: var(--accent);
+    font-size: 1.4rem;
+    margin-bottom: 10px;
+}
+
+.era-card p {
+    color: #bbb;
+    font-size: 0.9rem;
+}
+
+/* Video section */
+.video-section {
+    text-align: center;
+}
+
+.video-section video {
+    max-width: 100%;
+    border-radius: 10px;
+    border: 2px solid #222222;
+    margin-top: 15px;
+}
+
+/* ===== FORM ===== */
+.feedback-section {
+    background-color: #111111;
+    border-radius: 12px;
+    padding: 35px;
+    border: 1px solid #222222;
+}
+
+.feedback-section h2 {
+    font-size: 1.6rem;
+    color: var(--primary);
+    margin-bottom: 20px;
+    border-bottom: 2px solid var(--accent);
+    padding-bottom: 10px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    color: var(--text);
+    font-weight: 600;
+    margin-bottom: 6px;
+    font-size: 0.95rem;
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    max-width: 500px;
+    padding: 10px 14px;
+    border: 1px solid #222222;
+    border-radius: 6px;
+    background-color: #000000;
+    color: var(--text);
+    font-size: 0.95rem;
+    font-family: inherit;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+.form-group textarea {
+    height: 100px;
+    resize: vertical;
+}
+
+.radio-group {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 5px;
+}
+
+.radio-group label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: normal;
+    cursor: pointer;
+}
+
+.submit-btn {
+    background-color: var(--accent);
+    color: #000000;
+    border: none;
+    padding: 12px 35px;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.submit-btn:hover {
+    background-color: #cccccc;
+}
+
+/* ===== FOOTER ===== */
+footer {
+    background-color: #111111;
+    border-top: 3px solid var(--accent);
+    padding: 35px 40px 20px;
+    margin-top: 50px;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.footer-column {
+    flex: 1;
+    min-width: 200px;
+}
+
+.footer-column h3 {
+    color: var(--primary);
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+    border-bottom: 1px solid var(--accent);
+    padding-bottom: 8px;
+}
+
+.footer-column ul {
+    list-style: none;
+}
+
+.footer-column ul li {
+    margin-bottom: 8px;
+}
+
+.footer-column ul li a {
+    color: #aaa;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.3s;
+}
+
+.footer-column ul li a:hover {
+    color: var(--accent);
+}
+
+.footer-column p {
+    color: #aaa;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+}
+
+.footer-column a {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+.footer-column a:hover {
+    text-decoration: underline;
+}
+
+.footer-bottom {
+    text-align: center;
+    padding-top: 20px;
+    margin-top: 25px;
+    border-top: 1px solid #222222;
+    color: #777;
+    font-size: 0.85rem;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+}
