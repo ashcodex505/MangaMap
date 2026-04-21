@@ -202,27 +202,40 @@
     </footer>
 
     <!-- Jikan API Script to load manga data -->
+    <script src="js/manga-modal.js"></script>
     <script>
+        // Helper to build a clickable manga card
+        function buildCard(manga) {
+            const card    = document.createElement('div');
+            const title   = manga.title || 'Untitled';
+            const authors = manga.authors?.map(a => a.name).join(', ') || 'Unknown';
+            const score   = manga.score || 'N/A';
+            const year    = manga.published?.prop?.from?.year || 'N/A';
+            const cover   = manga.images?.jpg?.image_url || '';
+            const malId   = manga.mal_id;
+
+            card.className = 'manga-card clickable';
+            card.title = `Click to view details for ${title}`;
+            card.innerHTML = `
+                <img src="${cover}" alt="Cover art for ${title}">
+                <div class="manga-card-info">
+                    <h3>${title}</h3>
+                    <p>by ${authors}</p>
+                    <p class="rating">Score: ${score} / 10</p>
+                    <p>Published: ${year}</p>
+                </div>
+            `;
+            card.addEventListener('click', () => openMangaModal(malId, title));
+            return card;
+        }
+
         // Fetch top-rated manga from Jikan API
         async function fetchTopManga() {
             try {
                 const response = await fetch('https://api.jikan.moe/v4/top/manga?limit=4');
                 const data = await response.json();
                 const grid = document.getElementById('top-manga-grid');
-                data.data.forEach(manga => {
-                    const card = document.createElement('div');
-                    card.className = 'manga-card';
-                    card.innerHTML = `
-                        <img src="${manga.images.jpg.image_url}" alt="Cover art for ${manga.title}">
-                        <div class="manga-card-info">
-                            <h3>${manga.title}</h3>
-                            <p>by ${manga.authors.map(a => a.name).join(', ') || 'Unknown'}</p>
-                            <p class="rating">Score: ${manga.score || 'N/A'} / 10</p>
-                            <p>Published: ${manga.published.prop.from.year || 'N/A'}</p>
-                        </div>
-                    `;
-                    grid.appendChild(card);
-                });
+                data.data.forEach(manga => grid.appendChild(buildCard(manga)));
             } catch (error) {
                 console.error('Error fetching top manga:', error);
             }
@@ -231,31 +244,16 @@
         // Fetch most popular manga from Jikan API
         async function fetchPopularManga() {
             try {
-                // Small delay to respect Jikan API rate limit
                 await new Promise(resolve => setTimeout(resolve, 1000));
                 const response = await fetch('https://api.jikan.moe/v4/top/manga?filter=bypopularity&limit=4');
                 const data = await response.json();
                 const grid = document.getElementById('popular-manga-grid');
-                data.data.forEach(manga => {
-                    const card = document.createElement('div');
-                    card.className = 'manga-card';
-                    card.innerHTML = `
-                        <img src="${manga.images.jpg.image_url}" alt="Cover art for ${manga.title}">
-                        <div class="manga-card-info">
-                            <h3>${manga.title}</h3>
-                            <p>by ${manga.authors.map(a => a.name).join(', ') || 'Unknown'}</p>
-                            <p class="rating">Score: ${manga.score || 'N/A'} / 10</p>
-                            <p>Published: ${manga.published.prop.from.year || 'N/A'}</p>
-                        </div>
-                    `;
-                    grid.appendChild(card);
-                });
+                data.data.forEach(manga => grid.appendChild(buildCard(manga)));
             } catch (error) {
                 console.error('Error fetching popular manga:', error);
             }
         }
 
-        // Load data when page loads
         fetchTopManga();
         fetchPopularManga();
     </script>

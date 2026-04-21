@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="The highest rated manga of all time on MangaMap. Rankings based on scores from MyAnimeList featuring titles, authors, scores, and publication years.">
+    <meta name="keywords" content="top rated manga, best manga, manga rankings, highest rated manga, manga scores, best manga of all time">
+    <meta name="author" content="Ashish Kurse">
+    <title>Top Rated Manga - MangaMap</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* ── Intro ── */
+        .rankings-intro {
+            background-color: #111111;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 50px;
+            border: 1px solid #222222;
+        }
+        .rankings-intro h2 { font-size: 2rem; color: var(--primary); margin-bottom: 12px; }
+        .rankings-intro p  { color: #bbb; max-width: 650px; margin: 0 auto; line-height: 1.7; }
+        .rankings-intro a  { color: var(--accent); text-decoration: none; }
+
+        /* ── Table ── */
+        .table-wrapper { overflow-x: auto; margin-bottom: 50px; }
+
+        .rankings-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #111111;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #222222;
+        }
+        .rankings-table thead tr {
+            background-color: #1a1a1a;
+            border-bottom: 2px solid var(--accent);
+        }
+        .rankings-table th {
+            padding: 16px 20px;
+            text-align: left;
+            color: var(--primary);
+            font-size: 0.9rem;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        .rankings-table tbody tr {
+            border-bottom: 1px solid #222222;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .rankings-table tbody tr:last-child { border-bottom: none; }
+        .rankings-table tbody tr:hover { background-color: #1a1a1a; }
+        .rankings-table td { padding: 14px 20px; color: var(--text); font-size: 0.9rem; }
+
+        .rank-num   { font-size: 1.1rem; font-weight: 700; color: var(--primary); }
+        .rank-gold  { color: #ffffff; }
+        .rank-silver{ color: #cccccc; }
+        .rank-bronze{ color: #aaaaaa; }
+
+        .title-cell { font-weight: 600; color: var(--primary); }
+        .click-hint { font-size: 0.75rem; color: #555; display: block; margin-top: 2px; }
+
+        .score-badge {
+            background-color: rgba(255,255,255,0.08);
+            color: var(--primary);
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.82rem;
+            border: 1px solid #333;
+            white-space: nowrap;
+        }
+
+        /* Loading row */
+        .table-loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        .spinner-sm {
+            display: inline-block;
+            width: 20px; height: 20px;
+            border: 2px solid #333;
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── Detail Modal ── */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.85);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-overlay.open { display: flex; }
+
+        .modal {
+            background: #111111;
+            border: 1px solid #333;
+            border-radius: 14px;
+            max-width: 820px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 16px; right: 20px;
+            background: none;
+            border: 1px solid #444;
+            color: var(--text);
+            font-size: 1.2rem;
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: background-color 0.2s;
+            z-index: 10;
+        }
+        .modal-close:hover { background-color: #2a2a2a; }
+
+        .modal-body {
+            display: flex;
+            gap: 30px;
+            padding: 35px;
+        }
+
+        .modal-cover {
+            flex-shrink: 0;
+            width: 200px;
+        }
+        .modal-cover img {
+            width: 100%;
+            border-radius: 8px;
+            border: 1px solid #2a2a2a;
+            display: block;
+        }
+        .modal-cover-placeholder {
+            width: 200px; height: 280px;
+            background: #1a1a1a;
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            color: #444; font-size: 0.85rem;
+        }
+
+        .modal-info { flex: 1; min-width: 0; }
+
+        .modal-title {
+            font-size: 1.6rem;
+            color: var(--primary);
+            margin-bottom: 4px;
+            line-height: 1.3;
+        }
+        .modal-title-jp {
+            font-size: 0.9rem;
+            color: #777;
+            margin-bottom: 18px;
+        }
+
+        .modal-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .meta-tag {
+            background-color: rgba(255,255,255,0.06);
+            border: 1px solid #2a2a2a;
+            border-radius: 20px;
+            padding: 4px 14px;
+            font-size: 0.82rem;
+            color: #ccc;
+        }
+        .meta-tag strong { color: var(--primary); }
+
+        .modal-score-big {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+        .modal-score-label { font-size: 0.8rem; color: #777; margin-bottom: 18px; }
+
+        .modal-section-title {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #666;
+            margin-bottom: 8px;
+            border-bottom: 1px solid #222;
+            padding-bottom: 5px;
+        }
+
+        .modal-synopsis {
+            color: #bbb;
+            font-size: 0.9rem;
+            line-height: 1.75;
+            margin-bottom: 20px;
+        }
+
+        .modal-genres {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        .genre-chip {
+            background-color: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 20px;
+            padding: 3px 12px;
+            font-size: 0.8rem;
+            color: #ccc;
+        }
+
+        .modal-loader {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 60px 35px;
+            color: #aaa;
+        }
+
+        .modal-mal-link {
+            display: inline-block;
+            margin-top: 10px;
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 0.88rem;
+            border: 1px solid var(--accent);
+            padding: 7px 18px;
+            border-radius: 6px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .modal-mal-link:hover { background-color: var(--accent); color: #000; }
+
+        /* ── Video ── */
+        .video-section { text-align: center; margin-bottom: 50px; }
+        .video-section video {
+            width: 100%; max-width: 800px;
+            border-radius: 10px;
+            border: 2px solid #222222;
+            margin-top: 15px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .video-note { color: #666; font-size: 0.85rem; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-area">
+            <div class="logo-text">
+                <h1>MangaMap</h1>
+                <p>Discover your next manga</p>
+            </div>
+        </div>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="genres.html">Genres</a></li>
+            <li><a href="eras.html">Manga By Era</a></li>
+            <li><a href="mangakas.html">Top Mangakas</a></li>
+            <li><a href="top-rated.html" class="active">Top Rated Manga</a></li>
+        </ul>
+    </nav>
+
+    <main>
+
+        <div class="rankings-intro">
+            <h2>Top Rated Manga of All Time</h2>
+            <p>The highest rated manga based on community scores from
+            <a href="https://myanimelist.net/topmanga.php" target="_blank">MyAnimeList</a>.
+            Click any title in the table to see the full description, genres, authors, and publication details pulled directly from MAL.</p>
+        </div>
+
+        <!-- Rankings Table -->
+        <section>
+            <h2 class="section-title">Rankings</h2>
+            <p class="section-subtitle">Click any row to view full details.</p>
+            <div class="table-wrapper">
+                <table class="rankings-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Title</th>
+                            <th>Author</th>
+                            <th>Genre</th>
+                            <th>Score</th>
+                            <th>Published</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rankings-tbody">
+                        <tr>
+                            <td colspan="7" class="table-loading">
+                                <span class="spinner-sm"></span> Loading rankings from MyAnimeList…
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Video Section -->
+        <section class="video-section">
+            <h2 class="section-title">What Makes a Great Manga?</h2>
+            <p class="section-subtitle">A short introduction to what sets the top-rated manga apart from the rest.</p>
+            <video controls>
+                <source src="videos/manga-intro.mov" type="video/quicktime">
+                <source src="videos/manga-intro.mov" type="video/mp4">
+                Your browser does not support the HTML video element.
+            </video>
+            <p class="video-note">Video: An introduction to top-rated manga and what makes them stand out</p>
+        </section>
+
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3>Site Links</h3>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="genres.html">Genres</a></li>
+                    <li><a href="eras.html">Manga By Era</a></li>
+                    <li><a href="mangakas.html">Top Mangakas</a></li>
+                    <li><a href="top-rated.html">Top Rated Manga</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Contact Us</h3>
+                <p>Have questions or suggestions?</p>
+                <p><a href="mailto:akurse@asu.edu">akurse@asu.edu</a></p>
+                <p>Arizona State University</p>
+                <p>Tempe, AZ 85281</p>
+            </div>
+            <div class="footer-column">
+                <h3>Resources</h3>
+                <p>Manga data provided by:</p>
+                <p><a href="https://myanimelist.net" target="_blank">MyAnimeList</a></p>
+                <p><a href="https://jikan.moe" target="_blank">Jikan API</a></p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 MangaMap | Ashish Kurse | CIS 300 Project Assignment</p>
+        </div>
+    </footer>
+
+    <!-- ── Detail Modal ── -->
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal" id="modal">
+            <button class="modal-close" id="modal-close" aria-label="Close">&#x2715;</button>
+            <div id="modal-content">
+                <!-- injected by JS -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ── Close modal helpers ───────────────────────────────────────────────
+        const overlay = document.getElementById('modal-overlay');
+        document.getElementById('modal-close').addEventListener('click', closeModal);
+        overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+        function closeModal() {
+            overlay.classList.remove('open');
+            document.getElementById('modal-content').innerHTML = '';
+        }
+
+        function openModal() {
+            overlay.classList.add('open');
+        }
+
+        // ── Load top-25 rankings on page load ────────────────────────────────
+        async function loadRankings() {
+            try {
+                const res  = await fetch('https://api.jikan.moe/v4/top/manga?limit=25');
+                if (!res.ok) throw new Error(`API ${res.status}`);
+                const json = await res.json();
+                const list = json.data || [];
+
+                const tbody = document.getElementById('rankings-tbody');
+                tbody.innerHTML = '';
+
+                list.forEach((m, i) => {
+                    const rank    = i + 1;
+                    const rankClass = rank === 1 ? 'rank-gold' : rank === 2 ? 'rank-silver' : rank === 3 ? 'rank-bronze' : '';
+                    const authors = m.authors?.map(a => a.name).join(', ') || 'N/A';
+                    const genres  = m.genres?.slice(0, 2).map(g => g.name).join(', ') || m.demographics?.slice(0,2).map(g=>g.name).join(', ') || 'N/A';
+                    const score   = m.score ? m.score.toFixed(2) : 'N/A';
+                    const year    = m.published?.prop?.from?.year || 'N/A';
+                    const status  = m.status || 'N/A';
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><span class="rank-num ${rankClass}">#${rank}</span></td>
+                        <td class="title-cell">
+                            ${m.title}
+                            <span class="click-hint">Click to view details</span>
+                        </td>
+                        <td>${authors}</td>
+                        <td>${genres}</td>
+                        <td><span class="score-badge">${score}</span></td>
+                        <td>${year}</td>
+                        <td>${status}</td>
+                    `;
+                    tr.addEventListener('click', () => openMangaDetail(m.mal_id, m.title));
+                    tbody.appendChild(tr);
+                });
+
+            } catch (err) {
+                document.getElementById('rankings-tbody').innerHTML =
+                    `<tr><td colspan="7" class="table-loading">Could not load rankings. Please refresh and try again.<br><small>${err.message}</small></td></tr>`;
+            }
+        }
+
+        // ── Fetch and show manga detail modal ─────────────────────────────────
+        async function openMangaDetail(malId, titleFallback) {
+            // Show modal with loading state immediately
+            document.getElementById('modal-content').innerHTML = `
+                <div class="modal-loader">
+                    <div class="spinner-sm" style="width:30px;height:30px;border-width:3px;"></div>
+                    <span>Loading details for ${titleFallback}…</span>
+                </div>
+            `;
+            openModal();
+
+            try {
+                const res  = await fetch(`https://api.jikan.moe/v4/manga/${malId}`);
+                if (!res.ok) throw new Error(`API ${res.status}`);
+                const json = await res.json();
+                const m    = json.data;
+
+                const cover      = m.images?.jpg?.large_image_url || m.images?.jpg?.image_url || '';
+                const titleEn    = m.title_english || m.title;
+                const titleJp    = m.title_japanese || '';
+                const score      = m.score ? m.score.toFixed(2) : 'N/A';
+                const scored_by  = m.scored_by ? m.scored_by.toLocaleString() : 'N/A';
+                const rank       = m.rank ? `#${m.rank}` : 'N/A';
+                const status     = m.status || 'N/A';
+                const volumes    = m.volumes || 'N/A';
+                const chapters   = m.chapters || 'N/A';
+                const startDate  = m.published?.from ? new Date(m.published.from).toLocaleDateString('en-US', {year:'numeric', month:'long', day:'numeric'}) : 'N/A';
+                const endDate    = m.published?.to   ? new Date(m.published.to).toLocaleDateString('en-US', {year:'numeric', month:'long'}) : (status === 'Publishing' ? 'Ongoing' : 'N/A');
+                const authors    = m.authors?.map(a => a.name).join(', ') || 'N/A';
+                const genres     = [...(m.genres||[]), ...(m.themes||[]), ...(m.demographics||[])];
+                const synopsis   = m.synopsis || 'No synopsis available.';
+                const malUrl     = m.url || `https://myanimelist.net/manga/${malId}`;
+
+                document.getElementById('modal-content').innerHTML = `
+                    <div class="modal-body">
+                        <div class="modal-cover">
+                            ${cover
+                                ? `<img src="${cover}" alt="Cover for ${titleEn}">`
+                                : `<div class="modal-cover-placeholder">No Image</div>`
+                            }
+                        </div>
+                        <div class="modal-info">
+                            <h2 class="modal-title">${titleEn}</h2>
+                            ${titleJp ? `<p class="modal-title-jp">${titleJp}</p>` : ''}
+
+                            <div class="modal-score-big">${score} <span style="font-size:1rem;color:#777;">/ 10</span></div>
+                            <div class="modal-score-label">Scored by ${scored_by} users &bull; Ranked ${rank}</div>
+
+                            <div class="modal-meta">
+                                <span class="meta-tag"><strong>Author:</strong> ${authors}</span>
+                                <span class="meta-tag"><strong>Status:</strong> ${status}</span>
+                                <span class="meta-tag"><strong>Volumes:</strong> ${volumes}</span>
+                                <span class="meta-tag"><strong>Chapters:</strong> ${chapters}</span>
+                                <span class="meta-tag"><strong>Started:</strong> ${startDate}</span>
+                                <span class="meta-tag"><strong>Ended:</strong> ${endDate}</span>
+                            </div>
+
+                            ${genres.length > 0 ? `
+                                <p class="modal-section-title">Genres &amp; Themes</p>
+                                <div class="modal-genres">
+                                    ${genres.map(g => `<span class="genre-chip">${g.name}</span>`).join('')}
+                                </div>
+                            ` : ''}
+
+                            <p class="modal-section-title">Synopsis</p>
+                            <p class="modal-synopsis">${synopsis.replace(/\[Written by MAL Rewrite\]/g, '').trim()}</p>
+
+                            <a href="${malUrl}" target="_blank" class="modal-mal-link">View on MyAnimeList &#8599;</a>
+                        </div>
+                    </div>
+                `;
+
+            } catch (err) {
+                document.getElementById('modal-content').innerHTML = `
+                    <div class="modal-loader" style="flex-direction:column; gap:10px;">
+                        <p style="color:#aaa;">Could not load details for this manga.</p>
+                        <small style="color:#555;">${err.message}</small>
+                    </div>
+                `;
+            }
+        }
+
+        // ── Boot ──────────────────────────────────────────────────────────────
+        loadRankings();
+    </script>
+
+</body>
+</html>
