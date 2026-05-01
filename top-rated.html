@@ -91,6 +91,25 @@
         }
         @keyframes spin { to { transform: rotate(360deg); } }
 
+        /* ── Load More ── */
+        .load-more-wrap {
+            text-align: center;
+            margin-top: 35px;
+        }
+        .load-more-btn {
+            background-color: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 12px 40px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .load-more-btn:hover { background-color: var(--accent); color: #000; }
+        .load-more-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
         /* ── Detail Modal ── */
         .modal-overlay {
             display: none;
@@ -294,7 +313,7 @@
         <!-- Rankings Table -->
         <section>
             <h2 class="section-title">Rankings</h2>
-            <p class="section-subtitle">Click any row to view full details.</p>
+            <p class="section-subtitle">Click any row to view full details. Use Load More to see additional titles.</p>
             <div class="table-wrapper">
                 <table class="rankings-table">
                     <thead>
@@ -316,6 +335,9 @@
                         </tr>
                     </tbody>
                 </table>
+            </div>
+            <div class="load-more-wrap" id="rankings-load-more-wrap" style="display:none;">
+                <button class="load-more-btn" id="rankings-load-more-btn">Load More Rankings</button>
             </div>
         </section>
 
@@ -390,25 +412,50 @@
             overlay.classList.add('open');
         }
 
-        // ── Load top-25 rankings on page load ────────────────────────────────
-        async function loadRankings() {
+        // ── Rankings pagination state ─────────────────────────────────────────
+        let rankPage      = 1;
+        let rankLoading   = false;
+        let rankHasNext   = false;
+        let totalLoaded   = 0;
+
+        // ── Load rankings page (appends rows to existing table) ───────────────
+        async function loadRankings(fresh = false) {
+            if (rankLoading) return;
+            rankLoading = true;
+
+            const loadMoreBtn  = document.getElementById('rankings-load-more-btn');
+            const loadMoreWrap = document.getElementById('rankings-load-more-wrap');
+
+            if (fresh) {
+                document.getElementById('rankings-tbody').innerHTML =
+                    `<tr><td colspan="7" class="table-loading"><span class="spinner-sm"></span> Loading rankings from MyAnimeList…</td></tr>`;
+                loadMoreWrap.style.display = 'none';
+                rankPage    = 1;
+                totalLoaded = 0;
+            } else {
+                loadMoreBtn.disabled    = true;
+                loadMoreBtn.textContent = 'Loading…';
+            }
+
             try {
-                const res  = await fetch('https://api.jikan.moe/v4/top/manga?limit=25');
+                const res  = await fetch(`https://api.jikan.moe/v4/top/manga?limit=25&page=${rankPage}`);
                 if (!res.ok) throw new Error(`API ${res.status}`);
                 const json = await res.json();
                 const list = json.data || [];
 
+                rankHasNext = json.pagination?.has_next_page || false;
+
                 const tbody = document.getElementById('rankings-tbody');
-                tbody.innerHTML = '';
+                if (fresh) tbody.innerHTML = '';
 
                 list.forEach((m, i) => {
-                    const rank    = i + 1;
+                    const rank      = totalLoaded + i + 1;
                     const rankClass = rank === 1 ? 'rank-gold' : rank === 2 ? 'rank-silver' : rank === 3 ? 'rank-bronze' : '';
-                    const authors = m.authors?.map(a => a.name).join(', ') || 'N/A';
-                    const genres  = m.genres?.slice(0, 2).map(g => g.name).join(', ') || m.demographics?.slice(0,2).map(g=>g.name).join(', ') || 'N/A';
-                    const score   = m.score ? m.score.toFixed(2) : 'N/A';
-                    const year    = m.published?.prop?.from?.year || 'N/A';
-                    const status  = m.status || 'N/A';
+                    const authors   = m.authors?.map(a => a.name).join(', ') || 'N/A';
+                    const genres    = m.genres?.slice(0, 2).map(g => g.name).join(', ') || m.demographics?.slice(0,2).map(g=>g.name).join(', ') || 'N/A';
+                    const score     = m.score ? m.score.toFixed(2) : 'N/A';
+                    const year      = m.published?.prop?.from?.year || 'N/A';
+                    const status    = m.status || 'N/A';
 
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
@@ -427,11 +474,31 @@
                     tbody.appendChild(tr);
                 });
 
+                totalLoaded += list.length;
+                rankPage    += 1;
+
+                if (rankHasNext) {
+                    loadMoreBtn.disabled    = false;
+                    loadMoreBtn.textContent = `Load More Rankings (showing ${totalLoaded})`;
+                    loadMoreWrap.style.display = 'block';
+                } else {
+                    loadMoreWrap.style.display = 'none';
+                }
+
             } catch (err) {
-                document.getElementById('rankings-tbody').innerHTML =
-                    `<tr><td colspan="7" class="table-loading">Could not load rankings. Please refresh and try again.<br><small>${err.message}</small></td></tr>`;
+                if (fresh) {
+                    document.getElementById('rankings-tbody').innerHTML =
+                        `<tr><td colspan="7" class="table-loading">Could not load rankings. Please refresh and try again.<br><small>${err.message}</small></td></tr>`;
+                } else {
+                    loadMoreBtn.disabled    = false;
+                    loadMoreBtn.textContent = 'Try Again';
+                }
+            } finally {
+                rankLoading = false;
             }
         }
+
+        document.getElementById('rankings-load-more-btn').addEventListener('click', () => loadRankings(false));
 
         // ── Fetch and show manga detail modal ─────────────────────────────────
         async function openMangaDetail(malId, titleFallback) {
@@ -516,7 +583,7 @@
         }
 
         // ── Boot ──────────────────────────────────────────────────────────────
-        loadRankings();
+        loadRankings(true);
     </script>
 
 </body>

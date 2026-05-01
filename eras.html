@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Explore manga by era on MangaMap. Discover the best manga from the 1990s, 2000s, and 2010s and see how the art form evolved decade by decade.">
+    <meta name="keywords" content="manga by era, 90s manga, 2000s manga, 2010s manga, classic manga, manga history, best manga by decade">
+    <meta name="author" content="Ashish Kurse">
+    <title>Manga By Era - MangaMap</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Era page intro */
+        .page-intro {
+            background-color: #111111;
+            border-radius: 12px;
+            padding: 35px 40px;
+            margin-bottom: 40px;
+            border: 1px solid #222222;
+        }
+        .page-intro h2 {
+            font-size: 1.9rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        .page-intro p {
+            color: #bbb;
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+        .page-intro a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+        .page-intro a:hover { text-decoration: underline; }
+
+        /* Era tabs */
+        .era-tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 40px;
+            border: 1px solid #222222;
+            border-radius: 10px;
+            overflow: hidden;
+            flex-wrap: wrap;
+        }
+        .era-tab {
+            flex: 1;
+            min-width: 100px;
+            padding: 18px 10px;
+            text-align: center;
+            cursor: pointer;
+            background-color: #111111;
+            border: none;
+            color: var(--text);
+            font-size: 0.95rem;
+            font-weight: 600;
+            font-family: inherit;
+            transition: background-color 0.3s, color 0.3s;
+            border-right: 1px solid #222222;
+        }
+        .era-tab:last-child { border-right: none; }
+        .era-tab:hover { background-color: #1a1a1a; }
+        .era-tab.active {
+            background-color: var(--accent);
+            color: #000000;
+        }
+        .era-tab .tab-decade {
+            display: block;
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .era-tab .tab-label {
+            display: block;
+            font-size: 0.72rem;
+            opacity: 0.7;
+        }
+        .era-tab.active .tab-label { opacity: 0.6; }
+
+        /* Era info box */
+        .era-info-box {
+            background-color: #111111;
+            border-radius: 12px;
+            padding: 30px 35px;
+            margin-bottom: 35px;
+            border: 1px solid #222222;
+        }
+        .era-info-box h3 {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        .era-info-box p {
+            color: #bbb;
+            font-size: 0.95rem;
+            line-height: 1.75;
+            margin-bottom: 10px;
+        }
+        .era-info-box p:last-child { margin-bottom: 0; }
+        .era-highlight {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .era-highlight span {
+            background-color: rgba(255,255,255,0.06);
+            border: 1px solid #333;
+            border-radius: 20px;
+            padding: 4px 14px;
+            font-size: 0.82rem;
+            color: #ddd;
+        }
+
+        /* Results header */
+        .results-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .results-count {
+            font-size: 0.85rem;
+            color: #aaa;
+        }
+
+        /* Loader */
+        .loader {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 0;
+            color: #aaa;
+            gap: 15px;
+        }
+        .spinner {
+            width: 40px; height: 40px;
+            border: 3px solid #333;
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .state-msg {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+            font-size: 1rem;
+        }
+
+        /* Load more */
+        .load-more-wrap {
+            text-align: center;
+            margin-top: 35px;
+        }
+        .load-more-btn {
+            background-color: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 12px 40px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .load-more-btn:hover { background-color: var(--accent); color: #000; }
+        .load-more-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        /* Era comparison table */
+        .era-table-section {
+            margin-top: 60px;
+        }
+        .era-compare-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #111111;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #222222;
+        }
+        .era-compare-table thead tr {
+            background-color: #1a1a1a;
+            border-bottom: 2px solid var(--accent);
+        }
+        .era-compare-table th {
+            padding: 16px 20px;
+            text-align: left;
+            color: var(--primary);
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+        .era-compare-table tbody tr {
+            border-bottom: 1px solid #222222;
+            transition: background-color 0.2s;
+        }
+        .era-compare-table tbody tr:last-child { border-bottom: none; }
+        .era-compare-table tbody tr:hover { background-color: #1a1a1a; }
+        .era-compare-table td {
+            padding: 15px 20px;
+            color: var(--text);
+            font-size: 0.9rem;
+            vertical-align: top;
+        }
+        .era-compare-table td:first-child {
+            color: var(--primary);
+            font-weight: 700;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-area">
+            <div class="logo-text">
+                <h1>MangaMap</h1>
+                <p>Discover your next manga</p>
+            </div>
+        </div>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="genres.html">Genres</a></li>
+            <li><a href="eras.html" class="active">Manga By Era</a></li>
+            <li><a href="mangakas.html">Top Mangakas</a></li>
+            <li><a href="top-rated.html">Top Rated Manga</a></li>
+        </ul>
+    </nav>
+
+    <main>
+
+        <div class="page-intro">
+            <h2>Manga By Era</h2>
+            <p>Manga has evolved dramatically over the decades. Select an era below to explore the manga that defined it. Each decade brought new storytelling styles, genres, and cultural influences that shaped the medium we know today. Data is pulled live from <a href="https://myanimelist.net" target="_blank">MyAnimeList</a> via the Jikan API.</p>
+        </div>
+
+        <!-- Era tab selector -->
+        <div class="era-tabs" role="tablist">
+            <button class="era-tab" data-era="1980s" role="tab" aria-selected="false">
+                <span class="tab-decade">1980s</span>
+                <span class="tab-label">The Originals</span>
+            </button>
+            <button class="era-tab active" data-era="1990s" role="tab" aria-selected="true">
+                <span class="tab-decade">1990s</span>
+                <span class="tab-label">The Golden Age</span>
+            </button>
+            <button class="era-tab" data-era="2000s" role="tab" aria-selected="false">
+                <span class="tab-decade">2000s</span>
+                <span class="tab-label">Rise of Legends</span>
+            </button>
+            <button class="era-tab" data-era="2010s" role="tab" aria-selected="false">
+                <span class="tab-decade">2010s</span>
+                <span class="tab-label">Modern Classics</span>
+            </button>
+            <button class="era-tab" data-era="2020s" role="tab" aria-selected="false">
+                <span class="tab-decade">2020s</span>
+                <span class="tab-label">New Generation</span>
+            </button>
+        </div>
+
+        <!-- Era info + manga grid -->
+        <div id="era-content">
+            <p class="state-msg">Select an era above to load manga titles.</p>
+        </div>
+
+        <!-- Era Comparison Table -->
+        <section class="era-table-section">
+            <h2 class="section-title">Era Comparison Overview</h2>
+            <p class="section-subtitle">A side-by-side look at how manga has evolved across five defining decades.</p>
+            <div style="overflow-x:auto;">
+                <table class="era-compare-table">
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>1980s</th>
+                            <th>1990s</th>
+                            <th>2000s</th>
+                            <th>2010s</th>
+                            <th>2020s</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Defining Genre</td>
+                            <td>Action &amp; Sci-Fi Pioneers</td>
+                            <td>Classic Shonen &amp; Sports</td>
+                            <td>Shonen Big Three &amp; Psychological Thriller</td>
+                            <td>Dark Fantasy &amp; Isekai</td>
+                            <td>Genre-Blending &amp; Webtoon-Influenced</td>
+                        </tr>
+                        <tr>
+                            <td>Iconic Titles</td>
+                            <td>Dragon Ball, Akira, Fist of the North Star, Ranma 1/2</td>
+                            <td>Dragon Ball Z, Slam Dunk, Yu Yu Hakusho, One Piece</td>
+                            <td>Naruto, Bleach, Death Note, Fullmetal Alchemist</td>
+                            <td>Attack on Titan, My Hero Academia, Demon Slayer, Tokyo Ghoul</td>
+                            <td>Chainsaw Man, Blue Lock, Oshi no Ko, Dandadan</td>
+                        </tr>
+                        <tr>
+                            <td>Art Style Trend</td>
+                            <td>Thick expressive lines, heavy screentone use, large dramatic panels</td>
+                            <td>Bold linework, exaggerated action poses, detailed backgrounds</td>
+                            <td>Refined character designs, wider panel variety, emotional close-ups</td>
+                            <td>Dynamic cinematic compositions, digital shading, expressive faces</td>
+                            <td>Clean digital art, webtoon color influences, stylized minimalism</td>
+                        </tr>
+                        <tr>
+                            <td>Global Reach</td>
+                            <td>Primarily Japan; limited international exposure</td>
+                            <td>Beginning international expansion via dubbing and translation</td>
+                            <td>Mainstream global penetration via Shonen Jump and anime</td>
+                            <td>Worldwide streaming via Crunchyroll, Viz, and scanlations</td>
+                            <td>Day-one global digital releases; social media fandoms worldwide</td>
+                        </tr>
+                        <tr>
+                            <td>Key Themes</td>
+                            <td>Post-apocalyptic survival, martial arts origins, sci-fi dystopia</td>
+                            <td>Friendship, perseverance, martial arts, sports rivalries</td>
+                            <td>Power growth, moral conflict, strategic battle systems</td>
+                            <td>Survival horror, societal critique, hero society, reincarnation</td>
+                            <td>Identity, industry critique, dark humor, subverted expectations</td>
+                        </tr>
+                        <tr>
+                            <td>Medium &amp; Publishing</td>
+                            <td>Print-only, weekly anthology magazines in Japan</td>
+                            <td>Print-only, serialized in Weekly Shonen Jump</td>
+                            <td>Print primary, early digital scans spreading online</td>
+                            <td>Digital manga platforms emerge; simultaneous global releases</td>
+                            <td>Fully digital; apps like Manga Plus enable free global access</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3>Site Links</h3>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="genres.html">Genres</a></li>
+                    <li><a href="eras.html">Manga By Era</a></li>
+                    <li><a href="mangakas.html">Top Mangakas</a></li>
+                    <li><a href="top-rated.html">Top Rated Manga</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Contact Us</h3>
+                <p>Have questions or suggestions?</p>
+                <p><a href="mailto:akurse@asu.edu">akurse@asu.edu</a></p>
+                <p>Arizona State University</p>
+                <p>Tempe, AZ 85281</p>
+            </div>
+            <div class="footer-column">
+                <h3>Resources</h3>
+                <p>Manga data provided by:</p>
+                <p><a href="https://myanimelist.net" target="_blank">MyAnimeList</a></p>
+                <p><a href="https://jikan.moe" target="_blank">Jikan API</a></p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 MangaMap | Ashish Kurse | CIS 300 Project Assignment</p>
+        </div>
+    </footer>
+
+    <script src="js/manga-modal.js"></script>
+    <script>
+        // ── Era definitions ──────────────────────────────────────────────────
+        const ERAS = {
+            '1980s': {
+                label: 'The Originals — Birth of Modern Manga (1980–1989)',
+                desc: 'The 1980s laid the foundation for everything that followed. Akira Toriyama launched Dragon Ball in 1984 and immediately redefined what action manga could be. Kentaro Miura began Berserk in 1989, introducing a dark, cinematic style that would influence countless artists for decades. Rumiko Takahashi\'s Ranma 1/2 and Maison Ikkoku brought romantic comedy to new heights. This era proved manga could be a serious, ambitious medium capable of telling any kind of story.',
+                highlights: ['Dragon Ball', 'Akira', 'Fist of the North Star', 'City Hunter', 'Saint Seiya', 'Ranma 1/2', 'Berserk'],
+                startYear: 1980,
+                endYear: 1989
+            },
+            '1990s': {
+                label: 'The Golden Age of Shonen (1990–1999)',
+                desc: 'The 1990s are widely considered the golden age of shonen manga. Weekly Shonen Jump dominated newsstands and launched franchises that would define multiple generations. Dragon Ball reached its peak, Slam Dunk became Japan\'s most beloved sports manga, and Eiichiro Oda launched One Piece in 1997. This era established the power-of-friendship formula that shonen is still known for today.',
+                highlights: ['Dragon Ball Z', 'Slam Dunk', 'Yu Yu Hakusho', 'Rurouni Kenshin', 'One Piece', 'Hajime no Ippo', 'Detective Conan'],
+                startYear: 1990,
+                endYear: 1999
+            },
+            '2000s': {
+                label: 'The Rise of Legends (2000–2009)',
+                desc: 'The 2000s saw manga reach unprecedented global popularity. The "Big Three" — Naruto, Bleach, and One Piece — dominated both in Japan and internationally. Death Note introduced a new kind of psychological thriller to mainstream audiences. Fullmetal Alchemist delivered one of the most acclaimed storylines in manga history. This decade proved manga could tackle complex themes while still achieving mass market success.',
+                highlights: ['Naruto', 'Bleach', 'Death Note', 'Fullmetal Alchemist', 'Berserk', 'Vinland Saga', 'Eyeshield 21'],
+                startYear: 2000,
+                endYear: 2009
+            },
+            '2010s': {
+                label: 'Modern Classics & Digital Revolution (2010–2019)',
+                desc: 'The 2010s redefined manga for the digital age. Attack on Titan brought dark, unpredictable storytelling to the forefront. My Hero Academia reinvented the superhero genre with manga sensibilities. Demon Slayer became a cultural phenomenon with its breathtaking art and emotional story. Meanwhile, digital platforms enabled simultaneous global releases, making it easier than ever for international readers to experience new titles.',
+                highlights: ['Attack on Titan', 'My Hero Academia', 'Demon Slayer', 'Tokyo Ghoul', 'Haikyuu!!', 'One Punch Man', 'Jujutsu Kaisen'],
+                startYear: 2010,
+                endYear: 2019
+            },
+            '2020s': {
+                label: 'The New Generation (2020–Present)',
+                desc: 'The 2020s have ushered in a bold new era of manga, shaped by digital-first publishing, webtoon influences, and a global fanbase more connected than ever. Chainsaw Man pushed the boundaries of dark shonen with surreal horror. Blue Lock reinvented sports manga with an ultra-competitive edge. Oshi no Ko blended idol culture with mystery-thriller storytelling. This decade is defined by genre-blending creativity and worldwide simultaneous releases.',
+                highlights: ['Chainsaw Man', 'Blue Lock', 'Oshi no Ko', 'Spy x Family', 'Dandadan', 'Kaiju No. 8', 'Frieren: Beyond Journey\'s End'],
+                startYear: 2020,
+                endYear: 2029
+            }
+        };
+
+        // ── State ───────────────────────────────────────────────────────────
+        let activeEra   = '1990s';
+        let currentPage = 1;
+        let hasNextPage = false;
+        let isLoading   = false;
+
+        // ── Tab click handlers ───────────────────────────────────────────────
+        document.querySelectorAll('.era-tab').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (isLoading || btn.dataset.era === activeEra) return;
+                document.querySelectorAll('.era-tab').forEach(b => {
+                    b.classList.remove('active');
+                    b.setAttribute('aria-selected', 'false');
+                });
+                btn.classList.add('active');
+                btn.setAttribute('aria-selected', 'true');
+                activeEra   = btn.dataset.era;
+                currentPage = 1;
+                hasNextPage = false;
+                loadEraManga(true);
+            });
+        });
+
+        // ── Load manga for current era ───────────────────────────────────────
+        async function loadEraManga(fresh) {
+            if (isLoading) return;
+            isLoading = true;
+
+            const era  = ERAS[activeEra];
+            const area = document.getElementById('era-content');
+
+            if (fresh) {
+                area.innerHTML = `
+                    <div class="era-info-box">
+                        <h3>${era.label}</h3>
+                        <p>${era.desc}</p>
+                        <div class="era-highlight">
+                            ${era.highlights.map(t => `<span>${t}</span>`).join('')}
+                        </div>
+                    </div>
+                    <div class="results-header">
+                        <h2 class="section-title">${activeEra} Manga</h2>
+                    </div>
+                    <div class="loader"><div class="spinner"></div><p>Loading ${activeEra} manga...</p></div>
+                `;
+            } else {
+                const btn = document.getElementById('load-more-btn');
+                if (btn) { btn.disabled = true; btn.textContent = 'Loading…'; }
+            }
+
+            try {
+                const era = ERAS[activeEra];
+                const url = `https://api.jikan.moe/v4/manga?start_date=${era.startYear}-01-01&end_date=${era.endYear}-12-31&order_by=score&sort=desc&limit=20&page=${currentPage}&min_score=6`;
+                const res  = await fetch(url);
+                if (!res.ok) throw new Error(`API error ${res.status}`);
+                const json = await res.json();
+
+                const items = json.data || [];
+                hasNextPage = json.pagination?.has_next_page || false;
+                currentPage += 1;
+
+                if (fresh) {
+                    const loader = area.querySelector('.loader');
+                    if (loader) loader.remove();
+
+                    const countEl = document.createElement('p');
+                    countEl.className = 'results-count';
+                    countEl.id = 'results-count';
+                    countEl.textContent = `Showing ${items.length} titles`;
+                    area.querySelector('.results-header').appendChild(countEl);
+
+                    const grid = document.createElement('div');
+                    grid.className = 'manga-grid';
+                    grid.id = 'era-manga-grid';
+                    area.appendChild(grid);
+                    appendCards(grid, items);
+                } else {
+                    const grid = document.getElementById('era-manga-grid');
+                    appendCards(grid, items);
+                    const countEl = document.getElementById('results-count');
+                    const current = grid.querySelectorAll('.manga-card').length;
+                    if (countEl) countEl.textContent = `Showing ${current} titles`;
+                }
+
+                // Load more button
+                const existingBtn  = document.getElementById('load-more-btn');
+                const existingWrap = document.getElementById('load-more-wrap');
+                if (existingBtn)  existingBtn.remove();
+                if (existingWrap) existingWrap.remove();
+
+                if (hasNextPage) {
+                    const wrap = document.createElement('div');
+                    wrap.className = 'load-more-wrap';
+                    wrap.id = 'load-more-wrap';
+                    const btn = document.createElement('button');
+                    btn.className = 'load-more-btn';
+                    btn.id = 'load-more-btn';
+                    btn.textContent = 'Load More';
+                    btn.addEventListener('click', () => loadEraManga(false));
+                    wrap.appendChild(btn);
+                    area.appendChild(wrap);
+                }
+
+                if (fresh && items.length === 0) {
+                    const grid = document.getElementById('era-manga-grid');
+                    if (grid) grid.innerHTML = '<p class="state-msg">No manga found for this era. Try another one.</p>';
+                }
+
+            } catch (err) {
+                console.error(err);
+                if (fresh) {
+                    const loader = area.querySelector('.loader');
+                    if (loader) loader.innerHTML = `<p class="state-msg">Could not load manga. Please try again in a moment.<br><small>${err.message}</small></p>`;
+                } else {
+                    const btn = document.getElementById('load-more-btn');
+                    if (btn) { btn.disabled = false; btn.textContent = 'Try Again'; }
+                }
+            } finally {
+                isLoading = false;
+            }
+        }
+
+        function appendCards(grid, items) {
+            items.forEach(manga => {
+                const title   = manga.title || 'Untitled';
+                const authors = manga.authors?.map(a => a.name).join(', ') || 'Unknown';
+                const score   = manga.score ? manga.score.toFixed(2) : 'N/A';
+                const year    = manga.published?.prop?.from?.year || 'N/A';
+                const cover   = manga.images?.jpg?.image_url || '';
+                const malId   = manga.mal_id;
+
+                const card = document.createElement('div');
+                card.className = 'manga-card clickable';
+                card.title = `Click to view details for ${title}`;
+                card.innerHTML = `
+                    ${cover
+                        ? `<img src="${cover}" alt="Cover art for ${title}" loading="lazy">`
+                        : `<div style="height:300px;background:#1a1a1a;display:flex;align-items:center;justify-content:center;color:#555;">No Image</div>`
+                    }
+                    <div class="manga-card-info">
+                        <h3>${title}</h3>
+                        <p>by ${authors}</p>
+                        <p class="rating">Score: ${score} / 10</p>
+                        <p>Published: ${year}</p>
+                    </div>
+                `;
+                card.addEventListener('click', () => openMangaModal(malId, title));
+                grid.appendChild(card);
+            });
+        }
+
+        // Auto-load the default era
+        loadEraManga(true);
+    </script>
+
+</body>
+</html>
